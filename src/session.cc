@@ -188,7 +188,7 @@ std::size_t session_t::read_data(const string& master_account)
               std::cout << "Transaction from DB: " << buffAsStdStr << std::endl;
 
               fullString.append(buffAsStdStr);
-              fullString.append("\n\n")
+              fullString.append("\n\n");
             }
 
             // Add the full string from the db to the context
