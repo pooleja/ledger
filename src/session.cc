@@ -157,21 +157,54 @@ std::size_t session_t::read_data(const string& master_account)
 
       std::cout << "Reading from SQL DB\n";
 
-      try{
-        
-        connection C("dbname=ledger user=ledger password=James hostaddr=127.0.0.1 port=5432");
-        if (C.is_open()) {
-          std::cout << "Opened database successfully: " << C.dbname() << std::endl;
-        } else {
-          std::cout << "Can't open database" << std::endl;
-          return 1;
-        }
-        C.disconnect ();
+        try{
+          
+          connection C("dbname=ledger user=ledger password=James hostaddr=127.0.0.1 port=5432");
+          if (C.is_open()) {
+            std::cout << "Opened database successfully: " << C.dbname() << std::endl;
 
-    }catch (const std::exception &e){
-        std::cerr << e.what() << std::endl;
-        throw_(parse_error, _("Failed to read from DB."));
-    }
+            // Select all rows from transactions
+            char * sql = "SELECT * from transactions";
+
+            // Create a non-transactional object.
+            nontransaction N(C);
+
+            // Execute SQL query
+            result R( N.exec( sql ));
+
+            // String to hold all transactions from the db
+            std::string fullString("");
+
+            //List down all the records
+            for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+              char buff[2048];
+
+              // Format is:
+              // [Date]<space>[description]
+              // <tab>[to_acct]<tab>[to_val]
+              // <tab>[from_acct]<tab>[from_val]
+              snprintf(buff, sizeof(buff), "%s %s\n\t%s\t%s\n\t%s\t%s", c[1].as<string>(), c[6].as<string>(), c[2].as<string>(), c[3].as<string>(), c[4].as<string>(), c[5].as<string>());              
+              std::string buffAsStdStr = buff;
+              std::cout << "Transaction from DB: " << buffAsStdStr << std::endl;
+
+              fullString.append(buffAsStdStr);
+              fullString.append("\n\n")
+            }
+
+            // Add the full string from the db to the context
+            shared_ptr<std::istream> stream(new std::istringstream(fullString));
+            parsing_context.push(stream);
+
+          } else {
+            std::cout << "Can't open database" << std::endl;
+            return 1;
+          }
+          C.disconnect ();
+
+      }catch (const std::exception &e){
+          std::cerr << e.what() << std::endl;
+          throw_(parse_error, _("Failed to read from DB."));
+      }
 
     } else if (pathname == "-" || pathname == "/dev/stdin") {
       // To avoid problems with stdin and pipes, etc., we read the entire
