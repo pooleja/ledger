@@ -30,6 +30,7 @@
  */
 
 #include <system.hh>
+#include <pqxx/pqxx> 
 
 #include "session.h"
 #include "xact.h"
@@ -37,6 +38,8 @@
 #include "journal.h"
 #include "iterators.h"
 #include "filters.h"
+
+using namespace pqxx;
 
 namespace ledger {
 
@@ -145,7 +148,32 @@ std::size_t session_t::read_data(const string& master_account)
   }
 
   foreach (const path& pathname, HANDLER(file_).data_files) {
-    if (pathname == "-" || pathname == "/dev/stdin") {
+    
+    if (pathname == "LedgerSQL") 
+    {
+      // If path name is LedgerSQL then we want to read in from the DB.
+      // We will read in all transactions and convert them to individual 
+      // lines and save them into a memory buffer just like if you specify stdin
+
+      std::cout << "Reading from SQL DB\n";
+
+      try{
+        
+        connection C("dbname=ledger user=ledger password=James hostaddr=127.0.0.1 port=5432");
+        if (C.is_open()) {
+          std::cout << "Opened database successfully: " << C.dbname() << std::endl;
+        } else {
+          std::cout << "Can't open database" << std::endl;
+          return 1;
+        }
+        C.disconnect ();
+
+    }catch (const std::exception &e){
+        std::cerr << e.what() << std::endl;
+        throw_(parse_error, _("Failed to read from DB."));
+    }
+
+    } else if (pathname == "-" || pathname == "/dev/stdin") {
       // To avoid problems with stdin and pipes, etc., we read the entire
       // file in beforehand into a memory buffer, and then parcel it out
       // from there.
