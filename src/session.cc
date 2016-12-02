@@ -159,9 +159,9 @@ std::size_t session_t::read_data(const string& master_account)
 
         try{
           
-          connection C("dbname=ledger user=ledger password=James hostaddr=127.0.0.1 port=5432");
+          connection C("dbname=ledger user=test5 password=test5 hostaddr=127.0.0.1 port=5432");
           if (C.is_open()) {
-            std::cout << "Opened database successfully: " << C.dbname() << std::endl;
+            //std::cout << "Opened database successfully: " << C.dbname() << std::endl;
 
             // Select all rows from transactions
             char * sql = "SELECT * from transactions";
@@ -175,6 +175,8 @@ std::size_t session_t::read_data(const string& master_account)
             // String to hold all transactions from the db
             std::string fullString("");
 
+            //std::cout << "Executed SQL query";
+
             //List down all the records
             for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
               char buff[2048];
@@ -185,7 +187,7 @@ std::size_t session_t::read_data(const string& master_account)
               // <tab>[from_acct]<tab>[from_val]
               snprintf(buff, sizeof(buff), "%s %s\n\t%s\t%s\n\t%s\t%s", c[1].as<string>(), c[6].as<string>(), c[2].as<string>(), c[3].as<string>(), c[4].as<string>(), c[5].as<string>());              
               std::string buffAsStdStr = buff;
-              std::cout << "Transaction from DB: " << buffAsStdStr << std::endl;
+              //std::cout << "Transaction from DB: " << buffAsStdStr << std::endl;
 
               fullString.append(buffAsStdStr);
               fullString.append("\n\n");
