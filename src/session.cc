@@ -185,7 +185,7 @@ std::size_t session_t::read_data(const string& master_account)
               // [Date]<space>[description]
               // <tab>[to_acct]<tab>[to_val]
               // <tab>[from_acct]<tab>[from_val]
-              snprintf(buff, sizeof(buff), "%s %s\n\t%s\t%s\n\t%s\t%s", c[1].as<string>(), c[6].as<string>(), c[2].as<string>(), c[3].as<string>(), c[4].as<string>(), c[5].as<string>());              
+              snprintf(buff, sizeof(buff), "%s %s\n\t%s\t%s\n\t%s\t%s", c[1].as<string>().c_str(), c[6].as<string>().c_str(), c[2].as<string>().c_str(), c[3].as<string>().c_str(), c[4].as<string>().c_str(), c[5].as<string>().c_str());              
               std::string buffAsStdStr = buff;
               //std::cout << "Transaction from DB: " << buffAsStdStr << std::endl;
 
