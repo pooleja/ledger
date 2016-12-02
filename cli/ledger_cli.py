@@ -7,9 +7,9 @@ import psycopg2
 
 def post_transaction_to_db(transaction_date, description, from_acct, to_acct, amount):
 
-    try:
+      try:
             # Connect to the DB
-            conn = psycopg2.connect("dbname='ledger' user='ledger' host='localhost' password='James'")
+            conn = psycopg2.connect("dbname='ledger' user='test5' host='localhost' password='test5'")
             print("Connected to the DB")
 
             # Insert the row into the DB
@@ -21,7 +21,7 @@ def post_transaction_to_db(transaction_date, description, from_acct, to_acct, am
             
             print("Successfully inserted transaction record.")
 
-        except Exception as ex:
+      except Exception as ex:
             print("Error with DB operation {}".format(ex))
 
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             print("Invalid amount param")
             return
 
-       post_transaction_to_db(transaction_date, description, from_acct, to_acct, amount)
+        post_transaction_to_db(transaction_date, description, from_acct, to_acct, amount)
        
 
     run()

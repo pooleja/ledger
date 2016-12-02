@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import pika
 import json
-import ledger-cli
+import ledger_cli
 
 if __name__ == '__main__':
     import click
@@ -32,10 +32,10 @@ if __name__ == '__main__':
         def callback(ch, method, properties, body):
             
             # Parse the message into a dict
-            message = json.loads(body)
+            message = json.loads(body.decode('utf-8'))
 
             # Post it to SQL using the cli tool
-            ledger-cli.post_transaction_to_db(message['transaction_date'], message['description'], message['from_acct'], message['to_acct'], message['amount'])
+            ledger_cli.post_transaction_to_db(message['transaction_date'], message['description'], message['from_acct'], message['to_acct'], message['amount'])
 
         channel.basic_consume(callback,
                             queue=queue_name,
